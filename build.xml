@@ -1,0 +1,66 @@
+<project name="KdTree" basedir="."  default="run">
+	<property name="src.dir" value="src"/>
+	<property name="bin.dir" value="bin"/>
+	<property name="jar.dir" value="jar"/>
+	<property name="lib.dir" value="lib"/>
+	<property name="report.dir" value="junitreport"/>
+
+	<property name="main-class" value="kdtree.Main"/>
+
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="**/*.jar"/>
+	</path>
+	<path id="application" location="${jar.dir}/${ant.project.name}.jar"/>
+
+	<target name="clean">
+		<delete dir="${bin.dir}"/>
+		<delete dir="${jar.dir}"/>
+		<delete dir="${report.dir}"/>
+	</target>
+
+	<target name="compile" depends="clean">
+		<mkdir dir="${bin.dir}"/>
+		<javac srcdir="${src.dir}" destdir="${bin.dir}" classpathref="classpath"/>
+	</target>
+
+	<target name="jar" depends="compile">
+		<mkdir dir="${jar.dir}"/>
+		<jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${bin.dir}">
+			<manifest>
+				<attribute name="Main-Class" value="${main-class}"/>
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="run" depends="jar">
+		<java fork="true" classname="${main-class}">
+			<classpath>
+				<path refid="classpath"/>
+				<path refid="application"/>
+			</classpath>
+		</java>
+	</target>
+
+	<target name="junit" depends="jar">
+		<mkdir dir="${report.dir}"/>
+		<junit fork="no" printsummary="yes">
+			<classpath>
+				<path refid="classpath"/>
+				<path refid="application"/>
+			</classpath>
+
+			<formatter type="xml"/>
+
+			<batchtest fork="no" todir="${report.dir}">
+				<fileset dir="${src.dir}" includes="**/*Test.java"/>
+			</batchtest>
+		</junit>
+	</target>
+
+	<target name="junitreport">
+		<junitreport todir="${report.dir}">
+			<fileset dir="${report.dir}" includes="TEST-*.xml"/>
+			<report todir="${report.dir}"/>
+		</junitreport>
+	</target>
+</project>
