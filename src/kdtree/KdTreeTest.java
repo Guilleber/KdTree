@@ -18,16 +18,44 @@ public class KdTreeTest {
 	}
 	
 	@Test
-	public void testNearestNeighbor() {
+	public void testSimple() {
 
 		// Init vector of points
 
-		ArrayList<Point2i> v_tree_points = grid();
+		ArrayList<Point2i> v_tree_points = new ArrayList<Point2i>();
 		
 		// Create kd-tree
 		
-		KdTree<Point2i> tree = new KdTree<Point2i>(2, v_tree_points,Integer.MAX_VALUE);
+		KdTree<Point2i> tree = new KdTree<Point2i>(2);
+
+		assertFalse("tree does not contain any points", tree.contains(new Point2i(0,0)));
+		assertEquals("tree is dimension 2", tree.dimension(), 2);
+		assertEquals("tree does not contain any points", tree.nb_points(), 0);
+
+		tree.insert(new Point2i(0,0));
+
+		assertTrue("(0,0) is in tree", tree.contains(new Point2i(0,0)));
+		assertFalse("(1,1) should not be in tree", tree.contains(new Point2i(1,1)));
+		assertEquals("tree contains (0,0)", tree.nb_points(), 1);
+
+		tree.insert(new Point2i(1,1));
+
+		assertTrue("(1,1) is in tree", tree.contains(new Point2i(1,1)));
+		assertFalse("(1,0) should not be in tree", tree.contains(new Point2i(1,0)));
+		assertEquals("tree contains (0,0) and (1,1)", tree.nb_points(), 2);
+
+	}
+	
+	@Test
+	public void testNearestNeighbor() {	
+		// Init vector of points
+
+		ArrayList<Point2i> v_tree_points = grid();
+
+		// Create kd-tree
 		
+		KdTree<Point2i> tree = new KdTree<Point2i>(2, v_tree_points, Integer.MAX_VALUE);
+
 		// Create a vector of query Point
 		ArrayList<Point2i> v_query_points = new ArrayList<Point2i>();
 		v_query_points.add(new Point2i(0,0));
