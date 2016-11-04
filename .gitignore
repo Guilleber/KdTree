@@ -1,3 +1,7 @@
-/KdTree/jar
-/KdTree/bin
-/KdTree/junitreport
+jar/*
+bin/*
+junitreport/*
+img/*
+lib/*
+ResColor.jpg
+ResId.jpg
