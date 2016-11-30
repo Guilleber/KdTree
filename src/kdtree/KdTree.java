@@ -1,6 +1,9 @@
 package kdtree;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Collections;
+import java.util.Comparator;
 
 public class KdTree<Point extends PointI>
 {
@@ -65,10 +68,41 @@ public class KdTree<Point extends PointI>
 		
 		//TODO: replace by a balanced initialization
 		this.n_points_=0;
-		for(Point p : points) {
-			insert(p);
-		}
+		arbreEquilibre(0, max_depth, points);
 	
+	}
+
+	private void arbreEquilibre(int d, int max_depth, List<Point> points) {
+		if(points.size() > 0 && max_depth != 0) {
+			Collections.sort(points, new Comparator<Point>() {
+				@Override
+				public int compare(Point p1, Point p2) {
+					return p1.get(d) - p2.get(d);
+				}
+			});
+			int index = points.size()/2;
+			this.insert(points.get(index));
+			arbreEquilibre((d+1)%dim_, max_depth-1, points.subList(0, index));
+			arbreEquilibre((d+1)%dim_, max_depth-1, points.subList(index+1, points.size()));
+		}
+	}
+	
+	public int Id(Point point) {
+		return Id(0, 0, root_, point);
+	}
+	
+	private int Id(int d, int profondeur, KdNode node, Point point) {
+		if(node.dist1D(point)<0) {
+			if(node.child_left_ == null)
+				return 1<<profondeur;
+			else
+				return Id((d+1)%dim_, profondeur+1, node.child_left_, point) + (1<<profondeur);
+		} else {
+			if(node.child_right_ == null)
+				return 0;
+			else
+				return Id((d+1)%dim_, profondeur+1, node.child_right_, point);
+		}
 	}
 	  
 	/////////////////
@@ -93,16 +127,18 @@ public class KdTree<Point extends PointI>
 	void insert(Point p) {
 		n_points_ += 1;
 		
-		if(root_==null) 
+		if(root_==null) {
 			root_ = new KdNode(p, 0);
-		
-		KdNode node = getParent(p);
-		if(node.dist1D(p)<0) {
-			assert(node.child_left_==null);
-			node.child_left_ = new KdNode(p, (node.d_+1)%dim_);
-		} else {
-			assert(node.child_right_==null);
-			node.child_right_ = new KdNode(p, (node.d_+1)%dim_);
+		}
+		else {
+			KdNode node = getParent(p);
+			if(node.dist1D(p)<0) {
+				assert(node.child_left_==null);
+				node.child_left_ = new KdNode(p, (node.d_+1)%dim_);
+			} else {
+				assert(node.child_right_==null);
+				node.child_right_ = new KdNode(p, (node.d_+1)%dim_);
+			}
 		}
 	}
 	void delete(Point p) {

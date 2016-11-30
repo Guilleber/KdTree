@@ -1,7 +1,6 @@
-jar/*
-bin/*
-junitreport/*
-img/*
-lib/*
-ResColor.jpg
-ResId.jpg
+jar/
+bin/
+junitreport/
+img/
+lib/
+/*.jpg
